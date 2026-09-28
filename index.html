@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#253b35">
+<meta name="description" content="A quiet home for your gaming history.">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./icons/icon-192.png">
+<link rel="stylesheet" href="./style.css">
+<title>Save Point — My Games</title>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-icon">✦</div><div><strong>Save Point</strong><small>YOUR GAME JOURNAL</small></div></div>
+    <div class="side-label">LIBRARY</div>
+    <nav id="nav" aria-label="Game library">
+      <button data-page="home" class="active"><span>Home</span></button>
+      <button data-filter="all"><span>All games</span><b id="count-all">0</b></button>
+      <button data-filter="wishlist"><span>Wishlist</span><b id="count-wishlist">0</b></button>
+      <button data-filter="playing"><span>Playing</span><b id="count-playing">0</b></button>
+      <button data-filter="paused"><span>Paused</span><b id="count-paused">0</b></button>
+      <button data-filter="completed"><span>Completed</span><b id="count-completed">0</b></button>
+      <button data-filter="dropped"><span>Dropped</span><b id="count-dropped">0</b></button>
+      <button data-page="timeline"><span>Timeline</span></button>
+      <button data-page="statistics"><span>Statistics</span></button>
+    </nav>
+    <div class="sidebar-bottom">
+      <p>Every game has a story.<br>Keep yours here.</p>
+      <button class="subtle" id="exportBtn" type="button">Export backup</button>
+      <label class="import-label">Import backup<input type="file" id="importInput" accept="application/json,.json" hidden></label>
+    </div>
+  </aside>
+
+  <main>
+    <!-- HOME PAGE -->
+    <section id="homePage" class="page active-page">
+      <header>
+        <div class="eyebrow">OVERVIEW</div>
+        <div class="heading">
+          <div><h1>Welcome back<span class="dot">.</span></h1><p class="intro" id="homeIntro">Here's where things stand.</p></div>
+          <button class="primary" id="homeAddBtn" type="button">＋ Add game</button>
+        </div>
+      </header>
+      <div id="homeGrid" class="home-grid"></div>
+    </section>
+
+    <!-- LIBRARY PAGE -->
+    <section id="libraryPage" class="page" hidden>
+      <header>
+        <div class="eyebrow">YOUR PERSONAL COLLECTION</div>
+        <div class="heading">
+          <div><h1 id="pageTitle">My games<span class="dot">.</span></h1><p class="intro" id="pageDescription">A little home for every world you've visited.</p></div>
+          <button class="primary" id="addBtn" type="button">＋ Add game</button>
+        </div>
+        <div class="toolbar">
+          <label class="search">⌕ <input id="search" type="search" placeholder="Search your collection..." autocomplete="off"></label>
+          <select id="sort" aria-label="Sort games"><option value="recent">Recently updated</option><option value="title">Title A–Z</option><option value="oldest">Oldest first</option></select>
+        </div>
+      </header>
+      <section id="games" class="game-grid" aria-live="polite"></section>
+      <div id="empty" class="empty" hidden><div class="empty-art">✧</div><h2 id="emptyTitle">Your story starts here</h2><p id="emptyText">Add your first game to start building your collection.</p><button class="primary" id="emptyAdd" type="button">＋ Add a game</button></div>
+      <footer>Made for the games worth remembering.</footer>
+    </section>
+
+    <!-- ADD GAME FLOW -->
+    <section id="addPage" class="page add-page" hidden>
+      <div class="page-topline"><button class="back-button" id="backToLibrary" type="button">← Library</button><span id="addStepLabel">ADD GAME</span></div>
+      <div class="flow-shell">
+        <div class="flow-progress"><span id="step1Progress" class="active"></span><span id="step2Progress"></span></div>
+
+        <section id="addStep1" class="add-step active-step">
+          <div class="eyebrow">NEW ENTRY</div>
+          <h1>Add a game<span class="dot">.</span></h1>
+          <p class="flow-intro">Start with the game you want to keep track of.</p>
+          <div class="add-choice">
+            <label class="large-field"><span>Game title</span><input id="newGameTitle" maxlength="120" placeholder="e.g. The Alters" autocomplete="off"></label>
+            <p class="or-label">For now, enter the title manually. Game database search can be added later.</p>
+            <button class="primary wide-button" id="continueAdd" type="button">Continue →</button>
+          </div>
+        </section>
+
+        <section id="addStep2" class="add-step" hidden>
+          <div class="eyebrow">GAME SETUP</div>
+          <h1 id="setupTitle">Your game<span class="dot">.</span></h1>
+          <p class="flow-intro">Where are you with this game?</p>
+          <div class="status-choices" id="statusChoices">
+            <button type="button" data-status="wishlist"><strong>Wishlist</strong><span>Something you want to play.</span></button>
+            <button type="button" data-status="playing"><strong>Playing</strong><span>You're currently exploring it.</span></button>
+            <button type="button" data-status="completed"><strong>Completed</strong><span>You've already finished it.</span></button>
+          </div>
+          <div class="optional-details">
+            <label class="large-field"><span>Platform <em>optional</em></span><select id="newGamePlatform"></select></label>
+            <div class="form-grid" id="completedFields" hidden>
+              <div class="field"><label>Time spent <em>optional</em></label><input id="newGameHours" type="number" min="0" step="0.5" placeholder="Hours"></div>
+              <div class="field"><label>Rating <em>optional</em></label><div class="star-input" id="newGameRatingInput"></div></div>
+            </div>
+            <label class="large-field"><span id="newGameNoteLabel">Note <em>optional</em></span><textarea id="newGameNote" rows="4" placeholder="Anything you want to remember about starting this game..." ></textarea></label>
+          </div>
+          <div class="flow-actions"><button class="secondary" id="backToStep1" type="button">← Back</button><button class="primary" id="saveNewGame" type="button" disabled>Add to library</button></div>
+        </section>
+      </div>
+    </section>
+
+    <!-- TIMELINE PAGE -->
+    <section id="timelinePage" class="page" hidden>
+      <header>
+        <div class="eyebrow">COMING SOON</div>
+        <div class="heading">
+          <div><h1>Timeline<span class="dot">.</span></h1><p class="intro">A chronological view of your gaming journey.</p></div>
+        </div>
+      </header>
+      <div class="empty"><div class="empty-art">◔</div><h2>Coming soon</h2><p>This page is still being built.</p></div>
+    </section>
+
+    <!-- STATISTICS PAGE -->
+    <section id="statisticsPage" class="page" hidden>
+      <header>
+        <div class="eyebrow">COMING SOON</div>
+        <div class="heading">
+          <div><h1>Statistics<span class="dot">.</span></h1><p class="intro">Deeper stats about your library.</p></div>
+        </div>
+      </header>
+      <div class="empty"><div class="empty-art">◔</div><h2>Coming soon</h2><p>This page is still being built.</p></div>
+    </section>
+  </main>
+</div>
+<div class="overlay" id="detailOverlay" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+    <button class="close" id="detailClose" type="button" aria-label="Close">×</button>
+    <div class="detail-cover"><span id="detailInitial"></span></div>
+    <h2 id="detailTitle"></h2>
+    <p class="subtitle" id="detailSubtitle"></p>
+
+    <div class="field wide">
+      <label>Change status</label>
+      <div class="status-pick" id="detailStatusChoices"></div>
+    </div>
+
+    <div class="form-grid" id="detailUpdateFields" hidden>
+      <div class="field"><label>Time spent <em>optional</em></label><input id="detailHours" type="number" min="0" step="0.5" placeholder="Hours"></div>
+      <div class="field"><label>Rating <em>optional</em></label><div class="star-input" id="detailRatingInput"></div></div>
+      <div class="field wide"><label>Comment <em>optional</em></label><textarea id="detailNote" rows="3" placeholder="Anything you want to remember..."></textarea></div>
+    </div>
+    <div class="actions" id="detailActions" hidden>
+      <button class="secondary" id="detailCancelUpdate" type="button">Cancel</button>
+      <button class="primary" id="detailSaveUpdate" type="button">Save update</button>
+    </div>
+
+    <div class="history">
+      <h3>History</h3>
+      <div id="detailHistoryList"></div>
+    </div>
+
+    <div class="actions">
+      <button class="danger" id="detailDeleteGame" type="button">Delete game</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script src="./app.js" defer></script>
+</body>
+</html>
